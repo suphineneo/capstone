@@ -22,7 +22,7 @@
 # =============================================================================
 
 import argparse, sys
-from confluent_kafka import avro, KafkaError
+from confluent_kafka import KafkaError
 from confluent_kafka.admin import AdminClient, NewTopic
 from uuid import uuid4
 
@@ -171,7 +171,7 @@ def create_topic(conf, topic):
 
     fs = a.create_topics([NewTopic(
          topic,
-         num_partitions=1,
+         num_partitions=6,
          replication_factor=3
     )])
     for topic, f in fs.items():
