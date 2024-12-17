@@ -2,19 +2,20 @@ from dotenv import load_dotenv
 import requests 
 import os
 import json
-from confluent_kafka.cimpl import Producer
-import ccloud_lib
 import time
+from confluent_kafka.cimpl import Producer
+import producer.ccloud_lib as ccloud_lib
 
 
-if __name__ == '__main__':
+
+def stream_coins():
 
     load_dotenv()
     api_key = os.environ.get("crypto_api_key")
 
     # Read arguments and configurations and initialize
     #args = ccloud_lib.parse_args()
-    config_file = 'ccloud.config'
+    config_file = 'producer/ccloud.config'
     #topic = args.topic
     conf = ccloud_lib.read_ccloud_config(config_file)
 
@@ -25,19 +26,18 @@ if __name__ == '__main__':
     # Create topic 
     kafka_topic="coins_current_full"
     ccloud_lib.create_topic(conf, kafka_topic)
-
-    delivered_records = 0
  
  # Poll the API every 3 seconds
     while True:
         # API URL and Payload
-        base_url = "https://api.livecoinwatch.com/coins/list"
+        base_url = "https://api.livecoinwatch.com/coins/map"
         payload = json.dumps({
+            "codes": ["USDT", "BTC", "ETH", "FDUSD", "XRP", "SOL", "USDC", "DOGE", "MOVE"],
             "currency": "USD",
-            "sort": "rank",
+            "sort": "code",
             "order": "ascending",
             "offset": 0,
-            "limit": 10,  # top 10
+            "limit": 0, 
             "meta": True
         })
 
@@ -55,12 +55,12 @@ if __name__ == '__main__':
             
             # Send each row of the data to Kafka
             for coin in data:
-                crank = coin.get('rank')
-                producer.produce(kafka_topic, key=str(crank), value=json.dumps(coin))
+                c_code = coin.get('code')
+                producer.produce(kafka_topic, key=str(c_code), value=json.dumps(coin))
                 producer.flush()  # Ensure the message is delivered
                 print(f"Message sent to Kafka: {coin}")
     
         else:
             print(f"Failed to fetch data: {response.status_code} - {response.text}")
 
-        time.sleep(3)
+        time.sleep(10)
