@@ -9,8 +9,8 @@ on:
 jobs:
   linter:
     runs-on: ubuntu-latest
-    container:
-      image: python:3.9-bookworm
+    #container:
+    #  image: python:3.9-bookworm
     
     steps:
       - name: Checkout code repository in agent
@@ -19,10 +19,10 @@ jobs:
           set-safe-directory: true
 
       # https://github.com/actions/runner/issues/2033#issuecomment-1204205989
-      - name: Set ownership
-        run: |
-          # this is to fix GIT not liking owner of the checkout dir
-          chown -R $(id -u):$(id -g) $PWD
+     # - name: Set ownership
+      #  run: |
+       #   # this is to fix GIT not liking owner of the checkout dir
+        #  chown -R $(id -u):$(id -g) $PWD
 
       - name: Set up python
         uses: actions/setup-python@v4
@@ -36,4 +36,4 @@ jobs:
 
       - name: Run linting checks. Exit code 1 if linter failed
         run: |
-          bash ./bin/linter.sh
+          bash ./.github/linter.sh
