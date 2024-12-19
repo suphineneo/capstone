@@ -26,7 +26,7 @@ from confluent_kafka import KafkaError
 from confluent_kafka.admin import AdminClient, NewTopic
 from uuid import uuid4
 
-#import certifi
+# import certifi
 
 name_schema = """
     {
@@ -39,9 +39,10 @@ name_schema = """
     }
 """
 
+
 class Name(object):
     """
-        Name stores the deserialized Avro record for the Kafka key.
+    Name stores the deserialized Avro record for the Kafka key.
     """
 
     # Use __slots__ to explicitly declare all data members.
@@ -55,7 +56,7 @@ class Name(object):
 
     @staticmethod
     def dict_to_name(obj, ctx):
-        return Name(obj['name'])
+        return Name(obj["name"])
 
     @staticmethod
     def name_to_dict(name, ctx):
@@ -63,8 +64,8 @@ class Name(object):
 
     def to_dict(self):
         """
-            The Avro Python library does not support code generation.
-            For this reason we must provide a dict representation of our class for serialization.
+        The Avro Python library does not support code generation.
+        For this reason we must provide a dict representation of our class for serialization.
         """
         return dict(name=self.name)
 
@@ -84,7 +85,7 @@ count_schema = """
 
 class Count(object):
     """
-        Count stores the deserialized Avro record for the Kafka value.
+    Count stores the deserialized Avro record for the Kafka value.
     """
 
     # Use __slots__ to explicitly declare all data members.
@@ -98,7 +99,7 @@ class Count(object):
 
     @staticmethod
     def dict_to_count(obj, ctx):
-        return Count(obj['count'])
+        return Count(obj["count"])
 
     @staticmethod
     def count_to_dict(count, ctx):
@@ -106,8 +107,8 @@ class Count(object):
 
     def to_dict(self):
         """
-            The Avro Python library does not support code generation.
-            For this reason we must provide a dict representation of our class for serialization.
+        The Avro Python library does not support code generation.
+        For this reason we must provide a dict representation of our class for serialization.
         """
         return dict(count=self.count)
 
@@ -116,18 +117,18 @@ def parse_args():
     """Parse command line arguments"""
 
     parser = argparse.ArgumentParser(
-             description="Confluent Python Client example to produce messages \
-                  to Confluent Cloud")
+        description="Confluent Python Client example to produce messages \
+                  to Confluent Cloud"
+    )
     parser._action_groups.pop()
-    required = parser.add_argument_group('required arguments')
-    required.add_argument('-f',
-                          dest="config_file",
-                          help="path to Confluent Cloud configuration file",
-                          required=True)
-    required.add_argument('-t',
-                          dest="topic",
-                          help="topic name",
-                          required=True)
+    required = parser.add_argument_group("required arguments")
+    required.add_argument(
+        "-f",
+        dest="config_file",
+        help="path to Confluent Cloud configuration file",
+        required=True,
+    )
+    required.add_argument("-t", dest="topic", help="topic name", required=True)
     args = parser.parse_args()
 
     return args
@@ -141,10 +142,10 @@ def read_ccloud_config(config_file):
         for line in fh:
             line = line.strip()
             if len(line) != 0 and line[0] != "#":
-                parameter, value = line.strip().split('=', 1)
+                parameter, value = line.strip().split("=", 1)
                 conf[parameter] = value.strip()
 
-    #conf['ssl.ca.location'] = certifi.where()
+    # conf['ssl.ca.location'] = certifi.where()
 
     return conf
 
@@ -152,28 +153,24 @@ def read_ccloud_config(config_file):
 def pop_schema_registry_params_from_config(conf):
     """Remove potential Schema Registry related configurations from dictionary"""
 
-    conf.pop('schema.registry.url', None)
-    conf.pop('basic.auth.user.info', None)
-    conf.pop('basic.auth.credentials.source', None)
+    conf.pop("schema.registry.url", None)
+    conf.pop("basic.auth.user.info", None)
+    conf.pop("basic.auth.credentials.source", None)
 
     return conf
 
 
 def create_topic(conf, topic):
     """
-        Create a topic if needed
-        Examples of additional admin API functionality:
-        https://github.com/confluentinc/confluent-kafka-python/blob/master/examples/adminapi.py
+    Create a topic if needed
+    Examples of additional admin API functionality:
+    https://github.com/confluentinc/confluent-kafka-python/blob/master/examples/adminapi.py
     """
 
     admin_client_conf = pop_schema_registry_params_from_config(conf.copy())
     a = AdminClient(admin_client_conf)
 
-    fs = a.create_topics([NewTopic(
-         topic,
-         num_partitions=6,
-         replication_factor=3
-    )])
+    fs = a.create_topics([NewTopic(topic, num_partitions=6, replication_factor=3)])
     for topic, f in fs.items():
         try:
             f.result()  # The result itself is None
