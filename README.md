@@ -34,10 +34,13 @@ Application for analysts and traders:
 
 
 ## Process flow:
-- stream.py: producer sends current data from  API into a Kafka topic 'coins_current_full' hosted on confluent cloud.
-- historical.py: producer sends historical data from API into a separate Kafka topic 'coins_historical' hosted on confluent cloud.
-- Using ksqldb, below stream and tables were created. Window tumbling and Hopping were applied to the real time streaming data to compute open, high, low, close prices by minute, and a moving average every 60 seconds.
+- stream.py: producer sends current data from  API into a Kafka topic '**coins_current_full**' hosted on confluent cloud.
+- historical.py: producer sends historical data from API into a separate Kafka topic '**coins_historical**' hosted on confluent cloud.
+- Using ksqldb, a stream and 2 tables ('**ohlc_by_minute**', '**60_sec_mov_avg**') were created. Window Tumbling and Hopping were applied to the real time streaming data to compute open, high, low, close prices by minute, and a moving average every 60 seconds.
 
 ![ksqldb_cluster-Page-2 drawio](https://github.com/user-attachments/assets/8b4bdeff-9769-4881-beab-dc3731dd3d8c)
 
+
+- The following Clickpipes were created for each of the 4 Kafka topic
+  <img width="757" alt="image" src="https://github.com/user-attachments/assets/816fe078-f035-4c47-8e82-fc032089fc2e" />
 
