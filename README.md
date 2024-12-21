@@ -76,8 +76,9 @@ EMIT CHANGES;
 - In Clickhouse, several views are created based on the data loaded from clickpipes.
   <img width="424" alt="image" src="https://github.com/user-attachments/assets/e7d46826-cb27-483e-9aad-4f15f5f682a2" />
 
-  *For the full list of transformation scripts, refer to https://github.com/suphineneo/capstone/blob/update_readme/clickhouse_scripts.md
-  For e.g,
+- *For the full list of transformation scripts, refer to https://github.com/suphineneo/capstone/blob/update_readme/clickhouse_scripts.md
+
+  Examples:
 ```bash
 -- Returns open high low close price for the CURRENT day. 
 -- Values will change while data is streaming.
@@ -120,5 +121,58 @@ SELECT
 FROM coins_current_full
 ORDER BY _timestamp
 ```
+
+## Testing:
+- Used a ClickHouse Connect client instance to connect to a ClickHouse Cloud service in python (https://clickhouse.com/docs/en/integrations/python)
+- Used pytest to test my ClickHouse views
+  
+```bash
+cd streaming
+python -m pytest
+```
+<img width="178" alt="image" src="https://github.com/user-attachments/assets/3de98735-0b6f-49f3-8184-a3dbd650cf1e" />
+
+## Build Docker container image and Deploy to AWS:
+```bash
+docker build --platform=linux/amd64 -t main .
+
+docker run --env-file .env main:latest
+```
+- Login to AWS CLI
+- Authenticate your Docker client to your registry
+- Tag and push
+
+```bash
+aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 443370714728.dkr.ecr.ap-southeast-1.amazonaws.com/coins
+
+docker tag main:latest ${CONTAINER_REGISTRY_URL}/coins:latest
+docker push ${CONTAINER_REGISTRY_URL}/coins:latest
+
+```
+- After the push, the image is reflected in AWS.
+
+- Elastic Container Registry (ECR) - screenshot of image in ECR
+ ![image](https://github.com/user-attachments/assets/7a45a41d-b061-4737-87d3-1938de6e8564)
+
+- Task Definition – Container is pointing to image in ECR
+ ![image](https://github.com/user-attachments/assets/efb06a17-d9be-4218-b4f3-f2bf3b96a4f1)
+
+
+- Elastic Container Service (ECS) - screenshot of task in ECS
+![image](https://github.com/user-attachments/assets/53a7e526-26ee-4f29-885d-389dad973d34)
+
+- Screenshot of messages produced to Kafka topic
+![image](https://github.com/user-attachments/assets/4248c16f-d495-4ff1-9353-4bf0df0ac954)
+![image](https://github.com/user-attachments/assets/e3f5414a-9f6c-4064-a316-f6d8682c53f0)
+
+
+ 
+ 
+
+
+
+
+
+
 
 
