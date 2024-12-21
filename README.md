@@ -15,6 +15,12 @@ Application for analysts and traders:
 > - Risk Management: Analyze market volatility.
 > - Performance Tracking: Monitor the performance of coins over time.
 
+Metabase dashboards:
+![image](https://github.com/user-attachments/assets/1787b69e-d1cb-4830-8a01-b2fd7c19b1f7)
+
+<img width="913" alt="image" src="https://github.com/user-attachments/assets/fed59971-ecf6-4ee4-871c-3010939c4b0e" />
+
+
 ## Source: 
 > - Subscribed to https://www.livecoinwatch.com/ API as there is documentation (https://livecoinwatch.github.io/lcw-api-docs/#coinssingle) and it seemed straightforward.
 > - API Daily Limit: 10,000
