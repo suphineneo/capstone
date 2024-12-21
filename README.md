@@ -44,3 +44,51 @@ Application for analysts and traders:
 - The following Clickpipes were created for each of the 4 Kafka topic
   <img width="757" alt="image" src="https://github.com/user-attachments/assets/816fe078-f035-4c47-8e82-fc032089fc2e" />
 
+- In Clickhouse, several views are created based on the data loaded from clickpipes.
+  <img width="424" alt="image" src="https://github.com/user-attachments/assets/e7d46826-cb27-483e-9aad-4f15f5f682a2" />
+
+  For e.g,
+```bash
+-- Returns open high low close price for the CURRENT day. 
+-- Values will change while data is streaming.
+-- Used in metabase dashboard
+CREATE VIEW v_ohlc_by_day AS 
+SELECT
+  toStartOfDay(toDate(_timestamp)) as date,
+  code,
+  name,
+  argMin(rate, _timestamp) as open,
+  max(rate) as high,
+  min(rate) as low,
+  argMax(rate, _timestamp) as close,
+  max(allTimeHighUSD) as allTimeHigh,
+  max(volume) as volume
+FROM "coins_current_full"
+GROUP BY date, code, name
+ORDER BY date, code;
+```
+```bash
+-- Returns % change between latest record and previous record
+-- Values will change while data is streaming.
+-- Used in metabase dashboard
+CREATE VIEW v_change_by_second AS
+SELECT
+    _timestamp,
+    code,
+    name,
+    rate,
+    allTimeHighUSD,
+    volume,
+    cap,
+    totalSupply,
+    anyOrNull(rate) OVER (
+        PARTITION BY code 
+        ORDER BY _timestamp
+        ROWS BETWEEN 1 PRECEDING AND 1 PRECEDING
+    ) AS previous_rate,
+    (rate - previous_rate)/previous_rate*100 as change
+FROM coins_current_full
+ORDER BY _timestamp
+```
+
+
