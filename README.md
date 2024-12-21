@@ -37,8 +37,37 @@ Application for analysts and traders:
 - stream.py: producer sends current data from  API into a Kafka topic '**coins_current_full**' hosted on confluent cloud.
 - historical.py: producer sends historical data from API into a separate Kafka topic '**coins_historical**' hosted on confluent cloud.
 - Using ksqldb, a stream and 2 tables ('**ohlc_by_minute**', '**60_sec_mov_avg**') were created. Window Tumbling and Hopping were applied to the real time streaming data to compute open, high, low, close prices by minute, and a moving average every 60 seconds.
-
-![ksqldb_cluster-Page-2 drawio](https://github.com/user-attachments/assets/8b4bdeff-9769-4881-beab-dc3731dd3d8c)
+```bash
+(Tumbling)
+CREATE TABLE ohlc_by_minute WITH (KAFKA_TOPIC='ohlc_by_minute', value_format='JSON') 
+AS
+SELECT
+TIMESTAMPTOSTRING(WINDOWSTART, 'yyyy-MM-dd HH:mm') as window_start,
+code,
+EARLIEST_BY_OFFSET(rate) as open,
+max(rate) as high,
+min(rate) as low,
+LATEST_BY_OFFSET(rate) as close
+from COINS_CURRENT_STREAM 
+WINDOW TUMBLING (SIZE 1 MINUTE)
+GROUP BY code
+EMIT CHANGES;
+```
+```bash
+(Hopping)
+CREATE TABLE 60_sec_mov_avg WITH (KAFKA_TOPIC='60_sec_mov_avg', value_format='JSON') 
+AS
+SELECT 
+TIMESTAMPTOSTRING(WINDOWSTART, 'yyyy-MM-dd HH:mm:ss') as window_start,
+code,
+avg(rate) as 60_sec_mov_avg
+from COINS_CURRENT_STREAM 
+WINDOW HOPPING (SIZE 60 SECONDS, ADVANCE BY 30 SECONDS)
+group by code
+EMIT CHANGES;
+```
+<img width="556" alt="image" src="https://github.com/user-attachments/assets/0614b2e6-46a8-4d39-b2ae-7cd018cf7dc6" />
+<img width="542" alt="image" src="https://github.com/user-attachments/assets/4e1e4d3b-f238-457e-89d7-daaeab7350ee" />
 
 
 - The following Clickpipes were created for each of the 4 Kafka topic
