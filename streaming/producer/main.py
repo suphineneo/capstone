@@ -12,5 +12,5 @@ def call_historical():
 
 if __name__ == "__main__":
 
-    call_stream()
-    # call_historical()
+    #call_stream()
+    call_historical()

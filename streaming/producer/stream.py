@@ -26,7 +26,7 @@ def stream_coins():
     kafka_topic = "coins_current_full"
     ccloud_lib.create_topic(conf, kafka_topic)
 
-    # Poll the API every 3 seconds
+    # Poll the API every n seconds
     while True:
         # API URL and Payload
         base_url = "https://api.livecoinwatch.com/coins/map"
@@ -41,7 +41,8 @@ def stream_coins():
                     "SOL",
                     "USDC",
                     "DOGE",
-                    "MOVE",
+                    "LINK",
+                    "AAVE"
                 ],
                 "currency": "USD",
                 "sort": "code",
@@ -71,4 +72,4 @@ def stream_coins():
         else:
             print(f"Failed to fetch data: {response.status_code} - {response.text}")
 
-        time.sleep(10)
+        time.sleep(3)
