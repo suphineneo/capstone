@@ -132,6 +132,10 @@ python -m pytest
 ```
 <img width="178" alt="image" src="https://github.com/user-attachments/assets/3de98735-0b6f-49f3-8184-a3dbd650cf1e" />
 
+## GitHub Actions
+
+
+
 ## Build Docker container image and Deploy to AWS:
 ```bash
 docker build --platform=linux/amd64 -t main .
