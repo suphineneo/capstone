@@ -76,6 +76,7 @@ EMIT CHANGES;
 - In Clickhouse, several views are created based on the data loaded from clickpipes.
   <img width="424" alt="image" src="https://github.com/user-attachments/assets/e7d46826-cb27-483e-9aad-4f15f5f682a2" />
 
+  *For the full list of transformation scripts, refer to https://github.com/suphineneo/capstone/blob/update_readme/clickhouse_scripts.md
   For e.g,
 ```bash
 -- Returns open high low close price for the CURRENT day. 
