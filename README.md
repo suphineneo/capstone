@@ -28,5 +28,27 @@ Application for analysts and traders:
 -	After some testing, I realise I have to pass in the same datetime as start and end date params to get exactly daily 12:00 UTC, i.e., 1 API call per date. Took a while to fetch historical data from 1 Jan 2024 to current date for 10 coins.
 - For Future improvement: Refine the way daily close is retrieved. Without a daily limit, the price at 12:00 UTC can be retrieved from the current value API and a seperate historical api is not necessary.
 
+## Architecture Diagram: 
+
+
+## Process flow:
+- stream.py: producer sends current data from  API into a Kafka topic 'coins_current_full' hosted on confluent cloud.
+- historical.py: producer sends historical data from API into a separate Kafka topic 'coins_historical' hosted on confluent cloud.
+- Using ksqldb, below stream and tables were created:
+-   	1. Create a stream tied to topic "coins_current_full 
+	CREATE STREAM coins_current_stream(
+	Code STRING,
+	 name STRING, 
+	  allTimeHighUSD DOUBLE,
+	   rate DOUBLE, 
+	  volume DOUBLE,
+	  cap DOUBLE
+	) WITH (
+	  KAFKA_TOPIC = 'coins_current_full',
+	  VALUE_FORMAT = 'JSON',
+	  PARTITIONS = 6
+	);
+
+
 
 
