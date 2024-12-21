@@ -25,30 +25,19 @@ Application for analysts and traders:
 **Challenges with getting a daily close for historical data**:
 -	Cryptocurrency market does not sleep. Trading happens 24/7, 365 days a year.
 -	History API from Livecoinwatch does not return a daily close. So I had to define price at 12:00 UTC as the daily close.
--	After some testing, I realise I have to pass in the same datetime as start and end date params to get exactly daily 12:00 UTC, i.e., 1 API call per date. Took a while to fetch historical data from 1 Jan 2024 to current date for 10 coins.
+-	After some testing, I realise I have to pass in the same datetime as start and end date params to get specifically daily 12:00 UTC price, i.e., 1 API call per date. Took a while to fetch historical data from 1 Jan 2024 to current date for 10 coins.
 - For Future improvement: Refine the way daily close is retrieved. Without a daily limit, the price at 12:00 UTC can be retrieved from the current value API and a seperate historical api is not necessary.
 
 ## Architecture Diagram: 
 
 
+
+
 ## Process flow:
 - stream.py: producer sends current data from  API into a Kafka topic 'coins_current_full' hosted on confluent cloud.
 - historical.py: producer sends historical data from API into a separate Kafka topic 'coins_historical' hosted on confluent cloud.
-- Using ksqldb, below stream and tables were created:
--   	1. Create a stream tied to topic "coins_current_full 
-	CREATE STREAM coins_current_stream(
-	Code STRING,
-	 name STRING, 
-	  allTimeHighUSD DOUBLE,
-	   rate DOUBLE, 
-	  volume DOUBLE,
-	  cap DOUBLE
-	) WITH (
-	  KAFKA_TOPIC = 'coins_current_full',
-	  VALUE_FORMAT = 'JSON',
-	  PARTITIONS = 6
-	);
+- Using ksqldb, below stream and tables were created. Window tumbling and Hopping were applied to the real time streaming data to compute open, high, low, close prices by minute, and a moving average every 60 seconds.
 
-
+![ksqldb_cluster-Page-2 drawio](https://github.com/user-attachments/assets/8b4bdeff-9769-4881-beab-dc3731dd3d8c)
 
 
