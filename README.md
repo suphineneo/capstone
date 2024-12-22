@@ -2,7 +2,7 @@
 
 ## Introduction:
 
-I purchased a handful of Solana on 21 May 2023 because i wanted to get a NFT Sneaker (https://www.stepn.com/- a Web3 lifestyle application that rewards users for outdoor movement with NFT Sneakers and Tokens). Since then, i have seen the price of Solana soar to great heights.
+I purchased a handful of Solana on 21 May 2023 because i wanted to get a NFT Sneaker (https://www.stepn.com/: a Web3 lifestyle application that rewards users for outdoor movement with NFT Sneakers and Tokens). Since then, i have seen the price of Solana soar to great heights.
 
 ![IMG_0715_my_stepn_sneaker](https://github.com/user-attachments/assets/bcaccfe9-e11d-4499-9bce-ac77108931f3)
 
@@ -14,11 +14,6 @@ Application for analysts and traders:
 > - Technical Indicators: Develop and chart technical indicators like 10 day, 30 day moving averages.
 > - Risk Management: Analyze market volatility.
 > - Performance Tracking: Monitor the performance of coins over time.
-
-Metabase dashboards:
-![image](https://github.com/user-attachments/assets/1787b69e-d1cb-4830-8a01-b2fd7c19b1f7)
-
-<img width="913" alt="image" src="https://github.com/user-attachments/assets/fed59971-ecf6-4ee4-871c-3010939c4b0e" />
 
 
 ## Source: 
@@ -32,11 +27,11 @@ Metabase dashboards:
 -	Cryptocurrency market does not sleep. Trading happens 24/7, 365 days a year.
 -	History API from Livecoinwatch does not return a daily close. So I had to define price at 12:00 UTC as the daily close.
 -	After some testing, I realise I have to pass in the same datetime as start and end date params to get specifically daily 12:00 UTC price, i.e., 1 API call per date. Took a while to fetch historical data from 1 Jan 2024 to current date for 10 coins.
-- For Future improvement: Refine the way daily close is retrieved. Without a daily limit, the price at 12:00 UTC can be retrieved from the current value API and a seperate historical api is not necessary.
+- For Future improvement: Refine the way daily close is retrieved. Schedule historical.py or without an api daily limit, the daily price at 12:00 UTC can be retrieved from the current value API and a seperate historical api is not necessary.
 
 ## Architecture Diagram: 
 
-
+> ![streaming_architecture_bootcamp2024.drawio.png](streaming_architecture_bootcamp2024.drawio.png)
 
 
 ## Process flow:
@@ -76,15 +71,16 @@ EMIT CHANGES;
 <img width="542" alt="image" src="https://github.com/user-attachments/assets/4e1e4d3b-f238-457e-89d7-daaeab7350ee" />
 
 
-- The following Clickpipes were created for each of the 4 Kafka topic
+- In Clickhouse, the following Clickpipes were created for each of the 4 Kafka topic
   <img width="757" alt="image" src="https://github.com/user-attachments/assets/816fe078-f035-4c47-8e82-fc032089fc2e" />
 
 - In Clickhouse, several views are created based on the data loaded from clickpipes.
   <img width="424" alt="image" src="https://github.com/user-attachments/assets/e7d46826-cb27-483e-9aad-4f15f5f682a2" />
 
-- *For the full list of transformation scripts, refer to https://github.com/suphineneo/capstone/blob/update_readme/clickhouse_scripts.md
+- For the full list of transformation scripts, refer to https://github.com/suphineneo/capstone/blob/update_readme/clickhouse_scripts.md
 
-  Examples:
+  Some examples:
+  
 ```bash
 -- Returns open high low close price for the CURRENT day. 
 -- Values will change while data is streaming.
@@ -127,6 +123,18 @@ SELECT
 FROM coins_current_full
 ORDER BY _timestamp
 ```
+## Metabase Dashboard:
+- Connect Metabase to my Clickhouse database (followed instructions in https://clickhouse.com/docs/en/integrations/metabase)
+- Upon connection, my tables and views in Clickhouse are available in Metabase
+<img width="684" alt="image" src="https://github.com/user-attachments/assets/f68dd490-d162-4dc4-8779-717696ff814c" />
+
+Screenshot of the latest price, % change, 1d & 7d %change, volume, market cap as well as Biggest Winners and Losers. 
+![image](https://github.com/user-attachments/assets/1787b69e-d1cb-4830-8a01-b2fd7c19b1f7)
+
+Screenshot of Open, High, Low, Close by minute and for current day
+
+Screenshot of 10 day moving average, historical daily price and volume chart: 
+<img width="913" alt="image" src="https://github.com/user-attachments/assets/fed59971-ecf6-4ee4-871c-3010939c4b0e" />
 
 ## Testing:
 - Used a ClickHouse Connect client instance to connect to a ClickHouse Cloud service in python (https://clickhouse.com/docs/en/integrations/python)
@@ -138,7 +146,11 @@ python -m pytest
 ```
 <img width="178" alt="image" src="https://github.com/user-attachments/assets/3de98735-0b6f-49f3-8184-a3dbd650cf1e" />
 
-## GitHub Actions
+## GitHub Actions:
+- GitHub Action is enabled for python linting.
+- Pull request will automatically trigger a workflow in Github.
+  ![image](https://github.com/user-attachments/assets/f251eb6d-26a0-4e0b-823f-0f9f88aff1ef)
+  ![image](https://github.com/user-attachments/assets/c5ac1a72-7b4c-4105-a4e8-c4bae25c4333)
 
 
 
