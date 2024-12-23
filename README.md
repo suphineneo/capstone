@@ -27,7 +27,8 @@ Application for analysts and traders:
 -	Cryptocurrency market does not sleep. Trading happens 24/7, 365 days a year.
 -	History API from Livecoinwatch does not return a daily close. So I had to define price at 12:00 UTC as the daily close.
 -	After some testing, I realise I have to pass in the same datetime as start and end date params to get specifically daily 12:00 UTC price, i.e., 1 API call per date. Took a while to fetch historical data from 1 Jan 2024 to current date for 10 coins.
-- For Future improvement: Refine the way daily close is retrieved. Schedule historical.py or without an api daily limit, the daily price at 12:00 UTC can be retrieved from the current value API and a seperate historical api is not necessary.
+- For Future improvement:
+  - Refine the way daily close is retrieved. Schedule historical.py to run once a day. historical.py should run concurrently with stream.py in main.py. *Ideally, without an api daily limit, the daily price at 12:00 UTC can be retrieved from the current value api and a seperate historical api is not necessary.
 
 ## Architecture Diagram: 
 
@@ -37,6 +38,12 @@ Application for analysts and traders:
 ## Process flow:
 - stream.py: producer sends current data from  API into a Kafka topic '**coins_current_full**' hosted on confluent cloud.
 - historical.py: producer sends historical data from API into a separate Kafka topic '**coins_historical**' hosted on confluent cloud.
+  - Incremental extract for historical.py:
+  - data/hist_last_date_loaded.csv file stores the last loaded date.
+  - If csv file is empty, this is the first load. Full upload from Jan 2024 to today's date.
+  - Last date (i.e., today's date) will be written into csv file
+  - In subsequent loads, date in csv file is read. Start date is last loaded date + 1 while end date is current date.
+
 - Using ksqldb, a stream and 2 tables ('**ohlc_by_minute**', '**60_sec_mov_avg**') were created. Window Tumbling and Hopping were applied to the real time streaming data to compute open, high, low, close prices by minute, and a moving average every 60 seconds.
 ```bash
 (Tumbling)
@@ -125,31 +132,45 @@ ORDER BY _timestamp
 ```
 ## Metabase Dashboard:
 - Connect Metabase to my Clickhouse database (followed instructions in https://clickhouse.com/docs/en/integrations/metabase)
-- Upon connection, my tables and views in Clickhouse are available in Metabase
+- Upon connection, my tables and views in Clickhouse are available in Metabase:
+- 
 <img width="684" alt="image" src="https://github.com/user-attachments/assets/f68dd490-d162-4dc4-8779-717696ff814c" />
 
-Screenshot of the latest price, % change, 1d & 7d %change, volume, market cap as well as Biggest Winners and Losers. 
-![image](https://github.com/user-attachments/assets/1787b69e-d1cb-4830-8a01-b2fd7c19b1f7)
+- Screenshot of the latest price, % change, 1d & 7d %change, volume, market cap as well as Biggest Winners and Losers:
 
-Screenshot of Open, High, Low, Close by minute and for current day
+  ![image](https://github.com/user-attachments/assets/1787b69e-d1cb-4830-8a01-b2fd7c19b1f7)
 
-Screenshot of 10 day moving average, historical daily price and volume chart: 
-<img width="913" alt="image" src="https://github.com/user-attachments/assets/fed59971-ecf6-4ee4-871c-3010939c4b0e" />
+- Screenshot of Open, High, Low, Close prices by minute and for current day:
 
+  ![image](https://github.com/user-attachments/assets/a42bf0ea-57c1-4881-953e-576adadf3865)
+
+- Screenshot of 10 day moving average, historical daily price and volume chart: 
+
+  <img width="913" alt="image" src="https://github.com/user-attachments/assets/fed59971-ecf6-4ee4-871c-3010939c4b0e" />
+
+## Run python scripts locally:
+```bash
+cd streaming
+python -m producer.main
+
+```
 ## Testing:
 - Used a ClickHouse Connect client instance to connect to a ClickHouse Cloud service in python (https://clickhouse.com/docs/en/integrations/python)
 - Used pytest to test my ClickHouse views
+- Test scripts in streaming\tests\test_clickhouse_views.py
   
 ```bash
 cd streaming
-python -m pytest
+pytest
 ```
-<img width="178" alt="image" src="https://github.com/user-attachments/assets/3de98735-0b6f-49f3-8184-a3dbd650cf1e" />
+![image](https://github.com/user-attachments/assets/77cae3c8-e941-4ee1-8ee7-612122d8868e)
+
 
 ## GitHub Actions:
 - GitHub Action is enabled for python linting.
 - Pull request will automatically trigger a workflow in Github.
   ![image](https://github.com/user-attachments/assets/f251eb6d-26a0-4e0b-823f-0f9f88aff1ef)
+  
   ![image](https://github.com/user-attachments/assets/c5ac1a72-7b4c-4105-a4e8-c4bae25c4333)
 
 
@@ -166,7 +187,6 @@ docker run --env-file .env main:latest
 
 ```bash
 aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 443370714728.dkr.ecr.ap-southeast-1.amazonaws.com/coins
-
 docker tag main:latest ${CONTAINER_REGISTRY_URL}/coins:latest
 docker push ${CONTAINER_REGISTRY_URL}/coins:latest
 
