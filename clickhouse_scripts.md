@@ -177,4 +177,29 @@ FROM
 v_change_by_day
 group by code, name
 
+-- Returns open high low close prices for every minute computed in ksqldb. 
+-- Cleans up the _key virtual column
+-- Used in metabase dashboard
+CREATE VIEW
+v_ohlc_by_minute AS
+SELECT
+parseDateTimeBestEffortOrNull(WINDOW_START) AS WINDOW_START_DATETIME,
+replaceRegexpAll((LEFT(_key,5)),'[^\x20-\x7E]', '') as CODE,
+OPEN,
+HIGH,
+LOW,
+CLOSE
+from ohlc_by_minute
+
+-- Returns moving average for every minute computed in ksqldb. 
+-- Cleans up the _key virtual column
+-- Used in metabase dashboard
+CREATE VIEW
+v_60_sec_mov_avg AS
+SELECT
+toDateTime(WINDOW_START) AS WINDOW_START_DATETIME,
+replaceRegexpAll((LEFT(_key,5)),'[^\x20-\x7E]', '') as CODE,
+60_SEC_MOV_AVG
+from 60_sec_mov_avg 
+
 ```
