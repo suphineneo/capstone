@@ -31,10 +31,21 @@ def stream_historical():
 
     # List of top 10 coin by volume
     # coin_list = ["USDT", "BTC", "ETH", "FDUSD", "XRP", "SOL", "USDC", "DOGE", "LINK", "AAVE"]
-    # note to self: for testing, "USDT", "BTC", "ETH", "FDUSD", "XRP", "SOL" loaded from 1 Jan to 19 Dec 2024..
-    
-    #coin_list = ["USDT", "BTC", "ETH", "FDUSD", "XRP", "SOL", "USDC", "DOGE", "LINK", "AAVE"]
-    coin_list = ["USDC", "DOGE", "LINK", "AAVE"] #only from 14 to 19 Dec
+    # note :  "USDT", "BTC", "ETH", "FDUSD", "XRP", "SOL" loaded from 1 Jan to 19 Dec 2024..
+    # ["USDC", "DOGE", "LINK", "AAVE"] loaded from 1 Jun to Dec 2024
+
+    coin_list = [
+        "USDT",
+        "BTC",
+        "ETH",
+        "FDUSD",
+        "XRP",
+        "SOL",
+        "USDC",
+        "DOGE",
+        "LINK",
+        "AAVE",
+    ]
 
     # Pull daily 12:00 UTC price for each coin
     i = 0
