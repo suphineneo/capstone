@@ -27,12 +27,12 @@ def connect_to_clickhouse():
 @pytest.fixture
 def coin_code_name_df():
     code_name_mapping = [
+        {"code": "AAVE", "name": "Aave"},
         {"code": "BTC", "name": "Bitcoin"},
         {"code": "DOGE", "name": "Dogecoin"},
         {"code": "ETH", "name": "Ethereum"},
         {"code": "FDUSD", "name": "First Digital USD"},
-        {"code": "MOVE", "name": "MarketMove"},
-        {"code": "PEPE", "name": "PepeCoin"},
+        {"code": "LINK", "name": "Chainlink"},
         {"code": "SOL", "name": "Solana"},
         {"code": "USDC", "name": "USDC"},
         {"code": "USDT", "name": "Tether"},

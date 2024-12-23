@@ -18,12 +18,12 @@ def get_date_range() -> dict[str, float]:
 
         # If file is empty, this is the first load. Get 2024/1/1 to current date.
         start_dt = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
-        end_dt = datetime(2024, 7, 31, 12, 0, 0, tzinfo=timezone.utc)
+        end_dt = datetime(2024, 12, 22, 12, 0, 0, tzinfo=timezone.utc)
         # end_dt = datetime.now(timezone.utc).replace(hour=12, minute=0, second=0, microsecond=0)
         print(f"First load - Data will be loaded from {start_dt} to {end_dt}")
     else:
 
-        # incremental load. start date is last loaded date + 1 while end date is current date.
+        # incremental load. start date is last loaded date in csv file + 1 while end date is current date.
         start_dt = last_date_loaded + timedelta(days=1)
         start_dt = start_dt.replace(hour=12, minute=0, second=0, microsecond=0)
         start_dt = start_dt.replace(tzinfo=timezone.utc)
