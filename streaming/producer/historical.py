@@ -33,8 +33,19 @@ def stream_historical():
     # coin_list = ["USDT", "BTC", "ETH", "FDUSD", "XRP", "SOL", "USDC", "DOGE", "LINK", "AAVE"]
     # note :  "USDT", "BTC", "ETH", "FDUSD", "XRP", "SOL" loaded from 1 Jan to 19 Dec 2024..
     # ["USDC", "DOGE", "LINK", "AAVE"] loaded from 1 Jun to Dec 2024
-    
-    coin_list = ["USDT", "BTC", "ETH", "FDUSD", "XRP", "SOL", "USDC", "DOGE", "LINK", "AAVE"]
+
+    coin_list = [
+        "USDT",
+        "BTC",
+        "ETH",
+        "FDUSD",
+        "XRP",
+        "SOL",
+        "USDC",
+        "DOGE",
+        "LINK",
+        "AAVE",
+    ]
 
     # Pull daily 12:00 UTC price for each coin
     i = 0

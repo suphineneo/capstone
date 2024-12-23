@@ -42,7 +42,7 @@ def stream_coins():
                     "USDC",
                     "DOGE",
                     "LINK",
-                    "AAVE"
+                    "AAVE",
                 ],
                 "currency": "USD",
                 "sort": "code",
