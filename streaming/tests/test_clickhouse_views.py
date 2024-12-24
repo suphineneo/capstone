@@ -7,7 +7,7 @@ import pandas as pd
 def connect_to_clickhouse():
     CLICKHOUSE_CLOUD_HOSTNAME = "mbhgy1qvki.ap-southeast-1.aws.clickhouse.cloud"
     CLICKHOUSE_CLOUD_USER = "default"
-    CLICKHOUSE_CLOUD_PASSWORD = "zwJ_1o_e5HEi4"
+    CLICKHOUSE_CLOUD_PASSWORD = "*******"
 
     client = clickhouse_connect.get_client(
         host=CLICKHOUSE_CLOUD_HOSTNAME,
